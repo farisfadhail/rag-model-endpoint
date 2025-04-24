@@ -97,18 +97,29 @@ exports.generateAnswer = async (req, res) => {
 		}
 
 		ensureDocumentsLoaded();
-		const relevant = findMostRelevant(question, documents);
 
-		if (relevant.length === 0) {
-			return res.status(200).json({ answer: "Sorry, I couldn't find any relevant context.", context: [] });
+		const relevant = await findMostRelevant(question, documents);
+
+		if (!Array.isArray(relevant) || relevant.length === 0) {
+			return res.status(200).json({
+				answer: "Sorry, I couldn't find any relevant context.",
+				context: [],
+			});
 		}
 
-		const context = relevant.map((doc) => doc.text);
-		const prompt = `Context:\n${context.join("\n\n")}\n\nQuestion: ${question}`;
+		const contextChunks = relevant.map((doc, i) => `### Dokumen ${i + 1} (${doc.id}):\n${doc.text}`);
+		const fullContext = contextChunks.join("\n\n");
+
+		const prompt = `Anda adalah asisten yang membantu. Jawab pertanyaan hanya berdasarkan dokumen-dokumen berikut.\n\n${fullContext}\n\n### Pertanyaan:\n${question}\n\n### Jawaban:`;
+
 		const answer = await askMistral(prompt);
 
-		res.json({ answer, context: relevant.map((r) => r.id) });
+		res.json({
+			answer: answer.trim(),
+			context: relevant.map((r) => r.id),
+		});
 	} catch (err) {
+		console.error("Error in generateAnswer:", err.message);
 		res.status(500).json({ error: err.message });
 	}
 };
