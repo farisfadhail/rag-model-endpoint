@@ -1,26 +1,20 @@
 const natural = require("natural");
-const { removeStopwords, ind } = require("stopword"); // Package stopword
-const sastrawijs = require("sastrawijs"); // Package sastrawijs
+const { removeStopwords, ind } = require("stopword");
+const sastrawijs = require("sastrawijs");
 const tokenizer = new natural.WordTokenizer();
 
-// Fungsi untuk stemming bahasa Indonesia menggunakan Sastrawijs
 function stem(text) {
 	const stemmer = new sastrawijs.Stemmer();
 	return stemmer.stem(text);
 }
 
-// Preprocessing dengan stopwords removal dan stemming
 function preprocess(text) {
-	// Tokenisasi kata-kata
 	let tokens = tokenizer.tokenize(text.toLowerCase());
 
-	// Hapus stopwords (kata yang tidak memiliki banyak makna)
 	tokens = removeStopwords(tokens, ind);
 
-	// Stemming untuk mendapatkan kata dasar
 	tokens = tokens.map((token) => stem(token));
 
-	// Hanya menyisakan kata yang mengandung huruf atau angka
 	tokens = tokens.filter((token) => /^[a-z0-9]+$/.test(token));
 
 	return tokens;
