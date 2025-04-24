@@ -8,7 +8,7 @@ Mengunggah dan meng-*ingest* dokumen `.txt` ke dalam sistem untuk digunakan seba
 
 | Field | Tipe      | Wajib | Keterangan         |
 |-------|-----------|-------|--------------------|
-| file  | File (.txt) | ✅    | Dokumen teks yang ingin diunggah |
+| file  | File (.txt) | ❌ (Opsional) | Dokumen teks yang ingin diunggah |
 
 ### 🔸 Contoh cURL:
 ```bash
@@ -21,7 +21,7 @@ curl -X POST http://localhost:3000/api/ingest -F "file=@./sample.txt"
   "status": "ok",
   "inserted": 1,
   "ingested": 3,
-  "files": ["ai.txt", "web3.txt", "blockchain.txt"]
+  "files": ["ai.txt", "blockchain.txt", "sample.txt"]
 }
 ```
 
